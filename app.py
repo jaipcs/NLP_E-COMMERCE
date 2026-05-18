@@ -146,11 +146,11 @@ df = df.dropna(subset=["sentiment"])
 
 df.reset_index(drop=True, inplace=True)
 
+
+
 # ============================================================
 # TRAIN MODELS
 # ============================================================
-
-
 @st.cache_resource
 def train_models(data):
 
@@ -266,6 +266,32 @@ def train_models(data):
         X_test_tfidf,
         y_test
     )
+
+
+# ============================================================
+# TRAIN MODELS SAFELY
+# ============================================================
+
+try:
+
+    (
+        tfidf,
+        trained_models,
+        best_model,
+        best_model_name,
+        results_df,
+        X_test_tfidf,
+        y_test
+    ) = train_models(df)
+
+except Exception as e:
+
+    st.error("Model training failed. Please check your dataset columns and missing values.")
+
+    st.exception(e)
+
+    st.stop()
+
 
 
 # ============================================================
