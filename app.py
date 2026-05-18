@@ -132,16 +132,30 @@ if "sentiment" not in df.columns:
 
     df["sentiment"] = df["rating"].apply(create_sentiment)
 
+# ============================================================
+# FINAL SAFETY CLEANING BEFORE MODEL TRAINING
+# ============================================================
+
+df["review"] = df["review"].fillna("").astype(str)
+
+df["clean_review"] = df["clean_review"].fillna("").astype(str)
+
+df = df[df["clean_review"].str.strip() != ""]
+
+df = df.dropna(subset=["sentiment"])
+
+df.reset_index(drop=True, inplace=True)
 
 # ============================================================
 # TRAIN MODELS
 # ============================================================
 
+
 @st.cache_resource
 def train_models(data):
 
-    X = data["clean_review"]
-    y = data["sentiment"]
+    X = data["clean_review"].fillna("").astype(str)
+    y = data["sentiment"].fillna("").astype(str)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X,
@@ -252,9 +266,6 @@ def train_models(data):
         X_test_tfidf,
         y_test
     )
-
-
-tfidf, trained_models, best_model, best_model_name, results_df, X_test_tfidf, y_test = train_models(df)
 
 
 # ============================================================
